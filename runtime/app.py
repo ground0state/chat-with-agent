@@ -40,7 +40,7 @@ def callback():
         handler.handle(body=request_body, signature=signature)
     except InvalidSignatureError:
         error_text = "ERROR: Invalid signature. Please check your channel access token / channel secret."
-        app.log.error(error_text)
+        print(error_text)
         return Response(body=error_text, status_code=400)
 
     return Response(
@@ -62,17 +62,18 @@ def handle_message(event):
         delete_all_message(line_user_id)
         info_text = "INFO: 今までの会話を削除しました。"
         reply_message(event, info_text)
-        app.log.info(info_text)
+        print(info_text)
         return
 
     # ChatGPT
     current_prompts = [{"role": "user", "content": prompt_text}]
     try:
         chat_histories = get_chat_history(line_user_id, QUERY_LIMIT)
-    except:
+    except Exception as e:
         reply_message(event, "DB Error")
         error_text = "ERROR: Cannot get chat histories"
-        app.log.error(error_text)
+        print(error_text)
+        print(e)
         return
 
     prompts = chat_histories + current_prompts
@@ -80,22 +81,24 @@ def handle_message(event):
         response = forward_message(prompts)
         response_text = response['text']
         response_timestamp = int(response['timestamp'])
-    except:
+    except Exception as e:
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text="GPT Error"))
         error_text = "ERROR: GPT is bussy"
-        app.log.error(error_text)
+        print(error_text)
+        print(e)
         return
     # save message
     try:
         insert_message(line_user_id, prompt_text, "user", line_timestamp)
         insert_message(line_user_id, response_text,
                        "assistant", response_timestamp)
-    except:
+    except Exception as e:
         reply_message(event, "Failed to save message to DB")
         error_text = "ERROR: Failed to save message to DB"
-        app.log.error(error_text)
+        print(error_text)
+        print(e)
     # returm message to line
     reply_message(event, response_text)
 

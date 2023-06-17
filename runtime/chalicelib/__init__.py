@@ -1,1 +1,1 @@
-from .chatgpt_api import complete_chat
+from .openai_api import complete_chat
