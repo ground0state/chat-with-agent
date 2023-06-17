@@ -1,0 +1,12 @@
+{
+  "version": "2.0",
+  "app_name": "chatgpt_aws_line",
+  "lambda_memory_size": 2048,
+  "lambda_timeout": 120,
+  "api_gateway_stage": "api",
+  "environment_variables": {
+    "OPENAI_API_KEY": "YOUR_API_KEY",
+    "LINE_CHANNEL_SECRET": "YOUR_CHANNEL_SECRET",
+    "LINE_CHANNEL_ACCESS_TOKEN": "YOUR_CHANNEL_ACCESS_TOKEN"
+  }
+}
