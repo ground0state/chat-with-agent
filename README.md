@@ -1,8 +1,12 @@
-# GPT on LINE
+# Chat with agent
 
-![System](/image/system.png)
+<img src="/image/system.png" width="800">
 
-Using Chalice and AWS CDK, we will build a REST API that will serve as a webhook for LINE bot. We use AWS API Gate way, Lambda, and Dynamo DB.
+Using Chalice and AWS CDK, we build a REST API that will serve as a webhook for LINE bot. We use AWS API Gate way, Lambda, and Dynamo DB.
+
+This repository uses LangChain's Agents to create a bot that has short-term memory but includes search results in its responses.
+
+<img src="/image/Fyzeo86aMAAePbP.jpeg" width="400">
 
 ## Credentials
 
@@ -29,10 +33,10 @@ npm install -g aws-cdk
 pip install "chalice[cdkv2]"
 ```
 
-Clone this repository. We will call the root directory of this repository `$ROOT_DIRECTORY`。
+Clone this repository. We will call the root directory of this repository `ROOT_DIRECTORY`。
 
 ```sh
-git clone https://github.com/ground0state/GPT-on-LINE.git
+git clone https://github.com/ground0state/chat-with-agent.git
 ```
 
 Install libraries.
@@ -44,13 +48,16 @@ pip install -r requirements.txt
 
 ## Environment variables
 
-[Create your OpenAI API Key.](https://platform.openai.com/account/api-keys) Please also set up payment methods for Billing.
-[Create your new Messaging API channel.](https://developers.line.biz/ja/docs/messaging-api/getting-started/#using-oa-manager)
+Create your [OpenAI API Key](https://platform.openai.com/account/api-keys). Please also set up payment methods for Billing.
 
-Copy config file and edit to set your openAI API Key and LINE token.
+Create your [Messaging API channel](https://developers.line.biz/ja/docs/messaging-api/getting-started/#using-oa-manager).
+
+Create your [Custom Search JSON API](https://developers.google.com/custom-search/v1/overview).
+
+Copy config file and edit to set your Keys.
 
 ```sh
-cd runtime/.chalice
+cd $ROOT_DIRECTORY/runtime/.chalice
 cp config_sample.json config.json
 vi config.json
 ```
@@ -60,7 +67,7 @@ vi config.json
 Deploy with the following command.
 
 ```sh
-cd infrastructure
+cd $ROOT_DIRECTORY/infrastructure
 cdk bootstrap --profile chalice
 cdk deploy --profile chalice
 ```
@@ -74,18 +81,19 @@ Traceback (most recent call last):
 ModuleNotFoundError: No module named 'aws_cdk'
 ```
 
-After deployment is complete, the API Gateway URL will be displayed. Copy this and set it to the webhook URL of LINE Bot as `https://YOUR_ADDRESS/callback`.
+After deployment is complete, the API Gateway URL will be displayed in stdout. Copy this and set it to the [webhook URL of LINE Bot](https://developers.line.biz/ja/reference/messaging-api/#webhooks) as `https://YOUR_ADDRESS/callback`.
 
 ## Usage
 
 Chat with bot from your line app. "EXIT" command is special command to reset chat histories.
-When you want to instruct, edit `SYSTEM_PROMPTS` in `runtime/chalicelib/chatgpt_api.py`.
+When you want to instruct, edit `SYSTEM_PROMPT` in `runtime/chalicelib/chatgpt_api.py`.
 
 ## Undeploy
 
 Uneploy with the following command. Delete your LINE channel.
 
 ```sh
+cd $ROOT_DIRECTORY/infrastructure
 cdk destroy --profile chalice
 ```
 
